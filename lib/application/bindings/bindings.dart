@@ -6,6 +6,6 @@ class StateBindings extends Bindings{
   @override
   void dependencies(){
     Get.put(MainBottomNavController());
-    Get.put(EmailVerificationController());
+    // Get.put(EmailVerificationController());
   }
 }

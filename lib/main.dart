@@ -4,4 +4,3 @@ import 'application/app.dart';
 void main() {
   runApp(const NeoShop());
 }
-

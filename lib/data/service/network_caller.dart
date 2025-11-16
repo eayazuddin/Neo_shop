@@ -1,3 +1,4 @@
+/*
 import 'dart:convert';
 import 'dart:developer';
 import 'package:http/http.dart';
@@ -67,4 +68,4 @@ class NetworkCaller {
   //       MaterialPageRoute(builder: (context) => const EmailVerificationScreen()),
   //           (route) => false);
   // }
-}
+}*/

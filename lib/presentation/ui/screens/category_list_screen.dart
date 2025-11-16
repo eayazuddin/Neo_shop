@@ -40,7 +40,7 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
               crossAxisSpacing: 16,
             ),
             itemBuilder: (context, index) {
-              return const FittedBox(child: CategoryCard());
+              // return const FittedBox(child: CategoryCard(icon: null, title: '',));
             },
           ),
         ),

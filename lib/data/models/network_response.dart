@@ -1,3 +1,4 @@
+/*
 class NetworkResponse {
   final bool isSuccess;
   final int statusCode;
@@ -5,3 +6,4 @@ class NetworkResponse {
 
   NetworkResponse(this.isSuccess, this.statusCode, this.responseJson);
 }
+*/

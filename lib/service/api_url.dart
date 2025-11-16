@@ -5,8 +5,10 @@ class ApiUrl {
 
 
   ///==================================== Home  ==================================
-  
+
    static const String categoryList = '/CategoryList';
+   static const String productSlider = '/ListProductSlider';
+
 
 
 

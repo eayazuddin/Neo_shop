@@ -1,24 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:neo_shop/presentation/ui/screens/base/controller/main_bottom_nav_controller.dart';
-import 'package:neo_shop/presentation/ui/screens/product_list_screen.dart';
-import '../../../widgets/category_card.dart';
-import '../../../widgets/circular_icon_button.dart';
-import '../../../widgets/custom_text_field.dart';
+import '../../../../../utils/app_const.dart';
 import '../../../widgets/home/home_slider.dart';
-import '../../../widgets/product_card.dart';
-import '../../../widgets/section_header.dart';
+import '../../../widgets/home/sliderItem.dart';
 import '../controller/home_controller.dart';
+import '../../../widgets/category_card.dart';
+import '../../../widgets/custom_text_field.dart';
+import '../../../widgets/section_header.dart';
+import '../../../widgets/circular_icon_button.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomeScreen extends StatelessWidget {
+  HomeScreen({super.key});
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  final controller = Get.put(HomeController());
+  late final controller = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            Text(
+            const Text(
               "NEO SHOP",
               style: TextStyle(
                 fontWeight: FontWeight.w600,
@@ -34,18 +28,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: Color(0xff115E59),
               ),
             ),
-            Spacer(),
+            const Spacer(),
             CircularIconButton(onTap: () {}, icon: Icons.person),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             CircularIconButton(onTap: () {}, icon: Icons.call),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             CircularIconButton(onTap: () {}, icon: Icons.notifications),
           ],
         ),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16),
           child: Column(
             children: [
               CustomTextField(
@@ -53,83 +47,116 @@ class _HomeScreenState extends State<HomeScreen> {
                 isPrefixIcon: true,
                 hintText: "Search",
               ),
-              SizedBox(height: 10),
-              HomeSlider(),
+              const SizedBox(height: 10),
+
+              // ================================= Slider ============================
+
+              Obx(() {
+                if (controller.sliderModelList.isEmpty) {
+                  return const SizedBox(
+                    height: 200,
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                } else {
+                  // Convert your sliderModelList into the required format
+                  List<Map<String, String>> sliderItems = controller.sliderModelList.map((item) {
+                    return {
+                      'title': item?.title ?? '',
+                      'image': item?.image ?? '',
+                      'price': item?.price ?? '',
+                      'shortDes': item?.shortDes ?? '',
+                    };
+                  }).toList();
+                  return HomeSlider(items: sliderItems);
+                }
+              }),
+
+              SizedBox(height: 16),
+
+              // ================================ Categories ======================================
               SectionHeader(
                 title: 'Categories',
                 onTap: () {
-                  Get.find<MainBottomNavController>().changeScreen(1);
+                  // Navigate to categories
                 },
               ),
-              Obx(
-                () => SizedBox(
-                  height: 90,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: controller.getAllCategoryModelList.length,
-                    itemBuilder: (context, index) {
-                      final category =
-                          controller.getAllCategoryModelList[index];
-                      return CategoryCard(
-                        image: NetworkImage(
-                          category?.categoryImg ??
-                              "https://gimgs2.nohat.cc/thumb/f/640/cleaner-with-cleaning-products-housekeeping-service-free-vector--bb3af4a57f2441d1b680.jpg",
-                        ),
-                        title: category?.categoryName ?? "",
-                      );
-                    },
-                  ),
-                ),
-              ),
-              SizedBox(height: 5),
-              SectionHeader(
-                title: 'Popular',
-                onTap: () {
-                  Get.to(productListScreen());
-                },
-              ),
+              const SizedBox(height: 8),
+              Obx(() {
+                if (controller.categoryStatus.value == Status.loading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (controller.categoryStatus.value == Status.error) {
+                  return const Center(child: Text("Failed to load categories"));
+                } else {
+                  return SizedBox(
+                    height: 100,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: controller.getAllCategoryModelList.length,
+                      itemBuilder: (context, index) {
+                        final category =
+                        controller.getAllCategoryModelList[index];
+                        return CategoryCard(
+                          image: category?.categoryImg != null
+                              ? NetworkImage(category!.categoryImg!)
+                              : const AssetImage(
+                            'assets/images/placeholder.png',
+                          )
+                          as ImageProvider,
+                          title: category?.categoryName ?? '',
+                        );
+                      },
+                    ),
+                  );
+                }
+              }),
+              const SizedBox(height: 16),
+
+              // Placeholder product sections
+              SectionHeader(title: 'Popular', onTap: () {}),
               SizedBox(
                 height: 170,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return productCard();
-                  },
+                  itemBuilder: (context, index) =>
+                      Container(
+                        width: 120,
+                        margin: const EdgeInsets.all(5),
+                        color: Colors.grey.shade300,
+                        child: const Center(child: Text("Product")),
+                      ),
                 ),
               ),
-              SizedBox(height: 5),
-              SectionHeader(
-                title: 'Special',
-                onTap: () {
-                  Get.to(productListScreen());
-                },
-              ),
+
+              SectionHeader(title: 'Special', onTap: () {}),
               SizedBox(
                 height: 170,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return productCard();
-                  },
+                  itemBuilder: (context, index) =>
+                      Container(
+                        width: 120,
+                        margin: const EdgeInsets.all(5),
+                        color: Colors.grey.shade300,
+                        child: const Center(child: Text("Product")),
+                      ),
                 ),
               ),
-              SizedBox(height: 5),
-              SectionHeader(
-                title: 'New',
-                onTap: () {
-                  Get.to(productListScreen());
-                },
-              ),
+
+              SectionHeader(title: 'New', onTap: () {}),
               SizedBox(
                 height: 170,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return productCard();
-                  },
+                  itemBuilder: (context, index) =>
+                      Container(
+                        width: 120,
+                        margin: const EdgeInsets.all(5),
+                        color: Colors.grey.shade300,
+                        child: const Center(child: Text("Product")),
+                      ),
                 ),
               ),
             ],
